@@ -1,0 +1,7 @@
+DECLARE
+ a; b; c;
+IN
+b:=2;
+c:=2;
+a:=b*c;
+END
