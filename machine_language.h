@@ -6,7 +6,7 @@ enum assm_ops {READ, WRITE , LOAD, STORE, COPY, DEC,
 	ADD, SUB, SHR, SHL, INC, 
  	JUMP, JZERO,  JODD, HALT,HALF};
 
-char *op_name[] = {"GET", "PUT", "LOAD", "STORE", "COPY","DEC"
+char *op_name[] = {"GET", "PUT", "LOAD", "STORE", "COPY", "DEC",
 	"ADD", "SUB", "SHR", "SHL", "INC",
 	"JUMP", "JZERO",  "JODD", "HALT", "HALF"};
 

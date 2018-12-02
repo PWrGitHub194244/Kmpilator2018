@@ -31,6 +31,10 @@
 			raise_error(IDEN_UNDEC,sym_name);
 		}
 		else{
+if(operation==READ)
+		gen_code(operation, identifier->offset);
+	
+else
 			gen_code2(operation, identifier->offset, 1);
 			identifier->is_defined = 1;
 		}
@@ -79,7 +83,7 @@ program:
 
 vdeclarations: //empty
 	| IDENTIFIER ';' vdeclarations { declare($1); }
-    | IDENTIFIER '('exp ':' exp ')'';' {declare($1);}
+    | IDENTIFIER '('NUMBER ':' NUMBER ')'';' {if($3>$5)raise_error(INDEX_TAB,-1); declare($1);}
 ;
 commands: //empty
 	| commands command
@@ -116,7 +120,7 @@ command: IDENTIFIER DIV NUMBER ';' {context_check_get($1);}
 	
 
 command: IDENTIFIER ASSGNOP exp ';' {		gen_code(LOAD,1); context_check_variable(COPY, $1); }
-|IDENTIFIER '('exp')' ASSGNOP exp ';'
+|IDENTIFIER '('IDENTIFIER')' ASSGNOP exp ';' {	 context_check_variable(COPY, $1);slist* identifier = get_symbol($3); gen_code2(COPY,1,identifier->offset); identifier = get_symbol($1); gen_code(STORE,identifier->offset);}
 
 	| IF condition { $1 = (label)new_label(); $1->for_jump_false = code_allocate(); }
 		THEN commands {$1->for_jump = code_allocate(); }
@@ -143,10 +147,10 @@ commands
     WHILE condition
  ENDDO 
 
-	| GET IDENTIFIER ';'{ gen_code(READ,$2);  }
+	| GET IDENTIFIER ';'{  context_check_variable(READ, $2);   }
 	| PUT IDENTIFIER ';'{ write_identifier(context_check_get($2)); }
-| GET IDENTIFIER'('exp')' ';'{ gen_code(READ,$2); }
-	| PUT IDENTIFIER'('exp')' ';'{ write_identifier(context_check_get($2)); }
+| GET IDENTIFIER '(' IDENTIFIER ')' ';'{  context_check_variable(READ, $2);slist* identifier = get_symbol($4); gen_code2(COPY,1,identifier->offset); identifier = get_symbol($2); gen_code(STORE,identifier->offset); }
+	| PUT IDENTIFIER '(' IDENTIFIER ')' ';'{  slist* identifier = get_symbol($4); gen_code2(COPY,1,identifier->offset); identifier = get_symbol($2); gen_code(LOAD,identifier->offset); write_identifier(context_check_get($2));}
 	//| WRITE exp { $2; gen_code(STORE, 0); gen_code(WRITE, 0); }
 ;
 exp: NUMBER	{   make_number($1); }
@@ -162,7 +166,7 @@ exp: NUMBER	{   make_number($1); }
    
    
     | IDENTIFIER MINUS NUMBER {make_number($3), 
-									  sub2(context_check_get($1)); } //ok
+									  sub2(context_check_get($1)); }
 	| NUMBER MINUS IDENTIFIER {make_number($1) , 
 									  sub2(context_check_get($3)); }//ok
 	| NUMBER MINUS NUMBER {make_number($1),gen_code2(COPY,2,1) , make_number($3),
@@ -172,15 +176,15 @@ exp: NUMBER	{   make_number($1); }
 									  
 									  
 	
-	 | IDENTIFIER TIMES NUMBER {make_number($3),gen_code(STORE,8888) , 
-									  multiply2(context_check_get($1)); }
-	| NUMBER TIMES IDENTIFIER {make_number($1),gen_code(STORE,8888) , 
-									  multiply2(context_check_get($3)); }
-	| NUMBER TIMES NUMBER {make_number($1),gen_code(STORE,8888) , make_number($3),gen_code(STORE,8889) , 
+	 | IDENTIFIER TIMES NUMBER {make_number($3), 
+									  multiply2(context_check_get($1)); } //ok
+	| NUMBER TIMES IDENTIFIER {make_number($1), 
+									  multiply2(context_check_get($3)); } //ok
+	| NUMBER TIMES NUMBER {make_number($1),gen_code2(COPY,2,1) , make_number($3), 
 									  multiply3(); }
 	
 	| IDENTIFIER TIMES IDENTIFIER { multiply(context_check_get($1),
-										   context_check_get($3)); }
+										   context_check_get($3)); } //ok
 	
 	| IDENTIFIER DIV NUMBER {make_number($3),gen_code(STORE,8888) , 
 									  divide2(context_check_get($1)); }

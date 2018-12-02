@@ -103,11 +103,11 @@ void multiply(slist* sym1, slist* sym2){
 	
 	if(sym1 == NULL || sym2 == NULL) return;
 	
-	gen_code(STORE,sym1->offset);
+	//gen_code(STORE,sym1->offset);
 	int while_label = get_label();
-	gen_code2(JZERO,sym1->offset,while_label + 4);		//0
+	gen_code2(JZERO,sym1->offset,while_label + 6);		//0
     gen_code(DEC,sym1->offset);	 //1
-   gen_code2(ADD,sym2->offset,sym1->offset);					//2
+    gen_code2(ADD,sym2->offset,sym1->offset);					//2
 	gen_code(JUMP,while_label);			//3
     gen_code(STORE,sym2->offset);					//4
 	}
@@ -117,59 +117,26 @@ void multiply(slist* sym1, slist* sym2){
 void multiply2(slist* sym1){
 	
 	if(sym1 == NULL ) return;
-	
-		gen_code(LOAD,sym1->offset);
-	
-	gen_code(STORE,1);
-	 
-	gen_code(STORE,0);
-	
-		gen_code(LOAD,8888);
-	
 	int while_label = get_label();
-	gen_code(JZERO,while_label + 13);		//0
-	gen_code(STORE,2);					//1
-	gen_code(JODD,while_label + 4);		//2
-	gen_code(JUMP,while_label + 7);		//3
-	gen_code(LOAD,0);					//4
-	gen_code(ADD, 1);					//5
-	gen_code(STORE,0);					//6
-	gen_code(LOAD,1);					//7
-	gen_code(SHL,888);					//8
-	gen_code(STORE,1);					//9
-	gen_code(LOAD,2);					//10
-	gen_code(SHR,888);					//11
-	gen_code(JUMP,while_label);			//12
-	gen_code(LOAD, 0);					
+	gen_code2(JZERO,sym1->offset,while_label + 6);		//0
+    gen_code(DEC,sym1->offset);	 //1
+    gen_code2(ADD,1,sym1->offset);					//2
+	gen_code(JUMP,while_label);			//3
+    gen_code(STORE,1);					//4
+	
+				
 }
 
 void multiply3(){
 	
 	
-		gen_code(LOAD,8888);
-	
-	gen_code(STORE,1);
-	 
-	gen_code(STORE,0);
-	
-		gen_code(LOAD,8889);
-	
 	int while_label = get_label();
-	gen_code(JZERO,while_label + 13);		//0
-	gen_code(STORE,2);					//1
-	gen_code(JODD,while_label + 4);		//2
-	gen_code(JUMP,while_label + 7);		//3
-	gen_code(LOAD,0);					//4
-	gen_code(ADD, 1);					//5
-	gen_code(STORE,0);					//6
-	gen_code(LOAD,1);					//7
-	gen_code(SHL,888);					//8
-	gen_code(STORE,1);					//9
-	gen_code(LOAD,2);					//10
-	gen_code(SHR,888);					//11
-	gen_code(JUMP,while_label);			//12
-	gen_code(LOAD, 0);					
-}
+	gen_code2(JZERO,2,while_label + 6);		//0
+    gen_code(DEC,2);	 //1
+    gen_code2(ADD,1,2);					//2
+	gen_code(JUMP,while_label);			//3
+    gen_code(STORE,1);					//4
+	}
 
 //a = sym1 / sym2
 void divide(slist* sym1, slist* sym2){
@@ -935,22 +902,19 @@ void mod3(){
 void con_eq(slist* sym1, slist* sym2){
 	if(sym1 == NULL || sym2 == NULL) return;
 	
-		gen_code(LOAD,sym1->offset);
+		gen_code2(SUB,1,1);
 	
-	gen_code(STORE, 0);
+	gen_code(STORE, sym1->offset);
 	
-		gen_code(LOAD,sym2->offset);
-	
-	gen_code(STORE, 1);
-	gen_code(SUB, 0);
-	gen_code(JZERO, get_label() + 2);
-	gen_code(JUMP, get_label() + 4);
-	gen_code(LOAD, 0);
-	gen_code(SUB, 1);
-	gen_code(JZERO, get_label() + 3);
-	  
-	gen_code(JUMP, get_label() + 2);
-	gen_code(INC, -1);
+		gen_code2(SUB, sym1->offset,sym2->offset);
+        gen_code2(JZERO, sym1->offset, get_label() + 2);	
+	    gen_code(LOAD, sym1->offset);
+        gen_code(STORE, sym2->offset);
+        gen_code2(SUB, sym2->offset,sym1->offset);
+        gen_code2(JZERO, sym2->offset, get_label() + 2);
+        gen_code(LOAD, sym2->offset);
+
+
 }
 
 // sym1 == exp
