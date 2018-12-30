@@ -1,9 +1,9 @@
 # Kompilator
-Kompilator prostego języka imperatywnego napisany na laboratoria z kursu Języki Formalne i Techniki Translacji
+Kompilator prostego języka napisany na laboratoria z kursu Języki Formalne i Techniki Translacji
 
-Autor: **Miriam Jańczak**
+Autor: **Piotr Bączkiewicz**
 
-Nr indeksu: **229761**
+Nr indeksu: **194244**
 
 ### Pliki
 - `Makefile` — plik służący do kompilacji projektu,
@@ -12,9 +12,9 @@ Nr indeksu: **229761**
 
 ### Użyte narzędzia
 Projekt został przetestowany przy pomocy narzędzi w następujących wersjach:
-- `gcc 5.4.0`
-- `g++ 5.4.0`
-- `flex 2.6.0`
+- `gcc 6.3.0`
+- `g++ 6.3.0`
+- `flex 2.6.1`
 - `bison (GNU Bison) 3.0.4`
 
 ### Sposób użycia
