@@ -500,6 +500,7 @@ forbody:
             memToRegister(iterator.mem);
             pushCommand("DEC B");
             registerToMem(iterator.mem);
+            pushCommand("INC B");
             memToRegister2(iterator2.mem);
 
 
@@ -521,6 +522,7 @@ forbody:
             memToRegister(iterator.mem);
             pushCommand("DEC B");
             registerToMem(iterator.mem);
+            pushCommand("INC B");
             pushCommand("SUB C C");           
             vector<string> opcodes;
             long long int startsFrom = stoll(iterator2.name);
@@ -552,6 +554,7 @@ forbody:
                     opcodes.push_back("INC C");
                 }
             }
+pushCommand("INC C");
             std::reverse(opcodes.begin(),opcodes.end());
             for (long long int i=0; i<opcodes.size();i++)
             {
@@ -614,9 +617,11 @@ forbody:
             pushCommand("ADD C H");
             pushCommand("COPY A C");
             pushCommand("LOAD C");
+
             memToRegister(iteratorindex2.mem);
             pushCommand("DEC B");
             registerToMem(iteratorindex2.mem);
+            pushCommand("INC B");
             long long int jumpCount = jumpStack.size()-1;
             long long int stack = jumpStack.at(jumpCount).placeInStack-1;
             pushCommandOneArg("JUMP", stack-1);
@@ -634,9 +639,11 @@ forbody:
             pushCommand("ADD B C");
             pushCommand("COPY A B");
             pushCommand("LOAD C");
+
             memToRegister(iteratorindex2.mem);
             pushCommand("DEC B");
             registerToMem(iteratorindex2.mem);
+            pushCommand("INC B");
             long long int jumpCount = jumpStack.size()-1;
             long long int stack = jumpStack.at(jumpCount).placeInStack-1;
             pushCommandOneArg("JUMP", stack-1);
@@ -750,6 +757,8 @@ forbody:
         pushCommand("INC B");
         registerToMem(iterator.mem);
         memToRegister2(iterator2.mem);
+pushCommand("INC C");
+
         long long int jumpCount = jumpStack.size()-1;
         long long int stack = jumpStack.at(jumpCount).placeInStack-1;
         pushCommandOneArg("JUMP", stack-1);
@@ -804,6 +813,8 @@ forbody:
         {
 	        pushCommand(opcodes.at(i));
         }
+pushCommand("INC C"); 
+
         long long int jumpCount = jumpStack.size()-1;
         long long int stack = jumpStack.at(jumpCount).placeInStack-1;
         pushCommandOneArg("JUMP", stack-1);
@@ -865,6 +876,7 @@ forbody:
             pushCommand("ADD C H");
             pushCommand("COPY A C");
             pushCommand("LOAD C");
+pushCommand("INC C"); 
             memToRegister(iteratorindex2.mem);
             pushCommand("INC B");
             registerToMem(iteratorindex2.mem);
@@ -891,6 +903,7 @@ forbody:
             pushCommand("ADD B C");
             pushCommand("COPY A B");
             pushCommand("LOAD C");
+pushCommand("INC C"); 
             memToRegister(iteratorindex2.mem);
             pushCommand("INC B");
             registerToMem(iteratorindex2.mem);
