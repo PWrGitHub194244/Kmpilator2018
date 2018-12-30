@@ -1,0 +1,17 @@
+DECLARE
+	  n; m(0:9); a;
+IN
+    a:=3;
+	n:=10;
+    m(n):=3;
+    m(4):=4;
+    
+        FOR j FROM a TO 100
+        DO
+            n:=j%2;
+            IF n==0 THEN
+                WRITE j;
+            ENDIF            
+        ENDFOR
+    
+END
