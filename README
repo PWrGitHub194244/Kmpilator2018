@@ -1,7 +1,0 @@
-Autor: Piotr Bączkiewicz -194244
-
-1.Program należy skompilować poprzez wywołanie komendy "make" w teminalu
-2.Program wywołuje sie poprzez uruchomienie pliku "compiler" w terminalu
-3.Wejście podaje sie jako parametr.
-4 Przykład : ./compiler < program1
-
