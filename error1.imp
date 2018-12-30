@@ -1,9 +1,0 @@
-[ jknkn
-*
-* ]
-DECLARE
-b; 
-IN
-b:=2;
-
-END
