@@ -51,7 +51,8 @@ void setRegister2(string number);
 void zeroRegister();
 void memToRegister(long long int mem);
 void memToRegister2(long long int mem);
-void registerToMem();
+void registerToMem(long long int mem);
+void registerToMem2(long long int mem);
 void add(Identifier a, Identifier b);
 void addTab(Identifier a, Identifier b, Identifier aIndex, Identifier bIndex);
 void sub(Identifier a, Identifier b, int isINC, int isRemoval);
@@ -421,6 +422,7 @@ forbody:
         Identifier b = identifierStack.at(expressionArguments[1]);
 
         if(a.type == "NUM") {
+
             setRegister(a.name);
             /*removeIdentifier(a.name);*/
         }
@@ -442,10 +444,12 @@ forbody:
                 pushCommand(" LOAD B ");
             }
         }
+//pushCommand(" INC B ");
         registerToMem(assignTarget.mem);
         identifierStack.at(assignTarget.name).initialized = 1;
         expressionArguments[0] = "-1";
         expressionArguments[1] = "-1";
+
 
         Identifier s;
         string name = "C" + to_string(depth);
@@ -454,210 +458,85 @@ forbody:
         registerToMem(identifierStack.at(name).mem);
         forStack.push_back(identifierStack.at(assignTarget.name));
 
-        if(b.type == "NUM") {
-            setRegister2(b.name);
-            forStack.push_back(identifierStack.at(b.name));
+Identifier s2;
+        string name2 = "D" + to_string(depth);
+        createIdentifier(&s2, name2, 1, 0, "IDE");
+        insertIdentifier(name2, s2);
+ forStack.push_back(identifierStack.at(s2.name));
+registerToMem(identifierStack.at(name2).mem);
+ if(b.type == "NUM") {
+            setRegister(b.name);
+
+            
         }
         else if(b.type == "IDE") {
-            memToRegister2(b.mem);
-            forStack.push_back(identifierStack.at(b.name));
+            memToRegister(b.mem);
+
         }
         else {
             Identifier index = identifierStack.at(argumentsTabIndex[1]);
-            forStack.push_back(identifierStack.at(b.name));
             if(index.type == "NUM") {
-                forStack.push_back(identifierStack.at(index.name));
+               
                 long long int tabElMem = b.mem + stoll(index.name) + 1;
-                memToRegister2(tabElMem);
-                forStack.push_back(identifierStack.at(index.name));
-                forStack.push_back(identifierStack.at(b.name));
+                memToRegister(tabElMem);
+
                 removeIdentifier(index.name);
             }
             else {
                 memToRegister2(b.mem);
+    //pushCommand(index.name);
                 pushCommand("COPY H C ");
                 memToRegister2(index.mem);
                 pushCommand("ADD H C");
                 pushCommand("COPY A H ");
-                pushCommand(" LOAD C ");
-                forStack.push_back(identifierStack.at(index.name));
-                forStack.push_back(identifierStack.at(index.name));
-                forStack.push_back(identifierStack.at(b.name));
+                pushCommand(" LOAD B ");
+
+               
             }
         }
-        pushCommand("COPY E C");
-        pushCommand("SUB B E");
+memToRegister2(s2.mem);
+ pushCommand(" INC C ");
+ pushCommand(" SUB C B ");
+
+
+pushCommand(" COPY B C ");
+        registerToMem(identifierStack.at(name2).mem);
         Jump j;
         createJump(&j, codeStack.size(), depth);
         jumpStack.push_back(j);
         pushCommand("JZERO B");
         assignFlag = 1;
+
+
+        
     } commands ENDFOR {
-        Identifier iterator2 = forStack.at(forStack.size()-1);
+     
+Identifier iterator = forStack.at(forStack.size()-2);
+Identifier iterator2 = forStack.at(forStack.size()-1);
+// pushCommand(iterator.name);
+memToRegister(iterator.mem);
+ pushCommand(" DEC B ");
+registerToMem(iterator.mem);
 
-        if(iterator2.type=="IDE"){
-            Identifier iterator = forStack.at(forStack.size()-2);
-            memToRegister(iterator.mem);
-            pushCommand("DEC B");
-            registerToMem(iterator.mem);
-            pushCommand("INC B");
-            memToRegister2(iterator2.mem);
-
-
-            long long int jumpCount = jumpStack.size()-1;
+// pushCommand(iterator.name);
+memToRegister(iterator2.mem);
+ pushCommand(" DEC B ");
+registerToMem(iterator2.mem);
+  long long int jumpCount = jumpStack.size()-1;
             long long int stack = jumpStack.at(jumpCount).placeInStack-1;
-            pushCommandOneArg("JUMP", stack-1);
-            addInt(jumpStack.at(jumpCount).placeInStack, codeStack.size());
-            jumpStack.pop_back();
-
-            string name = "C" + to_string(depth);
-            removeIdentifier(name);
-            removeIdentifier(iterator.name);
-
-            forStack.pop_back();
-            forStack.pop_back();
-        }
-        else if(iterator2.type=="NUM"){
-            Identifier iterator = forStack.at(forStack.size()-2);
-            memToRegister(iterator.mem);
-            pushCommand("DEC B");
-            registerToMem(iterator.mem);
-            pushCommand("INC B");
-            pushCommand("SUB C C");           
-            vector<string> opcodes;
-            long long int startsFrom = stoll(iterator2.name);
-            long long  int endsAt = 0;
-            long long   int current = startsFrom;
-            long long  int cost = 0;
-            while (current > endsAt)
-            {
-                if (current % 2 == 0 &&
-                    current * 2 >= endsAt)
-                {
-                    if (current - current / 2 < 5)
-                    {
-                        current--;
-                        cost++;
-                        opcodes.push_back("INC C");
-                    }
-                    else
-                    {
-                        current /= 2;
-                        cost += 5;
-                        opcodes.push_back("ADD C C");
-                    }
-                }
-                else
-                {
-                    current--;
-                    cost++;
-                    opcodes.push_back("INC C");
-                }
-            }
-pushCommand("INC C");
-            std::reverse(opcodes.begin(),opcodes.end());
-            for (long long int i=0; i<opcodes.size();i++)
-            {
-	            pushCommand(opcodes.at(i));
-            }
-            long long int jumpCount = jumpStack.size()-1;
-            long long int stack = jumpStack.at(jumpCount).placeInStack-1;
-            pushCommandOneArg("JUMP", stack-1);
+            pushCommandOneArg("JUMP", stack+1);
             addInt(jumpStack.at(jumpCount).placeInStack, codeStack.size());
             jumpStack.pop_back();
             string name = "C" + to_string(depth);
             removeIdentifier(name);
             removeIdentifier(iterator.name);
+removeIdentifier(iterator2.name);
             forStack.pop_back();
             forStack.pop_back();
-        }
-        else if(iterator2.type=="ARR"){
-            Identifier iteratorindex2 = forStack.at(forStack.size()-5);
-            Identifier iteratorindex = forStack.at(forStack.size()-2);
-
-            if(iteratorindex.type=="NUM"){
-            memToRegister2(iterator2.mem);
-            pushCommand("SUB H H");           
-            vector<string> opcodes;
-            long long int startsFrom = stoll(iteratorindex.name);
-            long long  int endsAt = 0;
-            long long   int current = startsFrom;
-            long long  int cost = 0;
-            while (current > endsAt)
-            {
-                if (current % 2 == 0 &&
-                    current * 2 >= endsAt)
-                {
-                    if (current - current / 2 < 5)
-                    {
-                        current--;
-                        cost++;
-                        opcodes.push_back("INC H");
-                    }
-                    else
-                    {
-                         current /= 2;
-                         cost += 5;
-                         opcodes.push_back("ADD H H");
-                    }
-                }
-                else
-                {
-                    current--;
-                    cost++;
-                    opcodes.push_back("INC H");
-                }
-            }
-            std::reverse(opcodes.begin(),opcodes.end());
-            for (long long int i=0; i<opcodes.size();i++)
-            {
-	            pushCommand(opcodes.at(i));
-            }
-
-            pushCommand("ADD C H");
-            pushCommand("COPY A C");
-            pushCommand("LOAD C");
-
-            memToRegister(iteratorindex2.mem);
-            pushCommand("DEC B");
-            registerToMem(iteratorindex2.mem);
-            pushCommand("INC B");
-            long long int jumpCount = jumpStack.size()-1;
-            long long int stack = jumpStack.at(jumpCount).placeInStack-1;
-            pushCommandOneArg("JUMP", stack-1);
-            addInt(jumpStack.at(jumpCount).placeInStack, codeStack.size());
-            jumpStack.pop_back();
-
-            string name = "C" + to_string(depth);
-            removeIdentifier(name);
-            forStack.pop_back();
-            forStack.pop_back();
-        } 
-        else if(iteratorindex.type=="IDE"){
-            memToRegister(iterator2.mem);
-            memToRegister2(iteratorindex.mem);    
-            pushCommand("ADD B C");
-            pushCommand("COPY A B");
-            pushCommand("LOAD C");
-
-            memToRegister(iteratorindex2.mem);
-            pushCommand("DEC B");
-            registerToMem(iteratorindex2.mem);
-            pushCommand("INC B");
-            long long int jumpCount = jumpStack.size()-1;
-            long long int stack = jumpStack.at(jumpCount).placeInStack-1;
-            pushCommandOneArg("JUMP", stack-1);
-            addInt(jumpStack.at(jumpCount).placeInStack, codeStack.size());
-            jumpStack.pop_back();
-
-            string name = "C" + to_string(depth);
-            removeIdentifier(name);
-            forStack.pop_back();
-            forStack.pop_back();
-        }
-    }
+            
     depth--;
     assignFlag = 1;
+
 
 }
 |   TO value DO {
@@ -703,20 +582,25 @@ pushCommand("INC C");
 
         if(b.type == "NUM") {
             setRegister2(b.name);
+
             forStack.push_back(identifierStack.at(b.name));
         }
         else if(b.type == "IDE") {
             memToRegister2(b.mem);
-            forStack.push_back(identifierStack.at(b.name));
+ //pushCommand("COPY D C ");
+registerToMem2(s.mem);
+ //pushCommand("COPY C B ");
+            forStack.push_back(identifierStack.at(s.name));
         }
         else {
             Identifier index = identifierStack.at(argumentsTabIndex[1]);
-            forStack.push_back(identifierStack.at(b.name));
+            forStack.push_back(identifierStack.at(s.name));
             if(index.type == "NUM") {
                 forStack.push_back(identifierStack.at(index.name));
 
                 long long int tabElMem = b.mem + stoll(index.name) + 1;
                 memToRegister2(tabElMem);
+                registerToMem2(s.mem);
                 forStack.push_back(identifierStack.at(index.name));
                 forStack.push_back(identifierStack.at(b.name));
 
@@ -724,11 +608,13 @@ pushCommand("INC C");
             }
             else {
                 memToRegister2(b.mem);
+
                 pushCommand("COPY H C ");
                 memToRegister2(index.mem);
                 pushCommand("ADD C H ");
                 pushCommand("COPY A C ");
                 pushCommand(" LOAD C ");
+registerToMem2(s.mem);
                 forStack.push_back(identifierStack.at(index.name));
                 forStack.push_back(identifierStack.at(index.name));
                 forStack.push_back(identifierStack.at(b.name));
@@ -752,7 +638,7 @@ pushCommand("INC C");
         if(iterator2.type=="IDE")
         {
         Identifier iterator = forStack.at(forStack.size()-2);
-
+//pushCommand(iterator2.name);
         memToRegister(iterator.mem);
         pushCommand("INC B");
         registerToMem(iterator.mem);
@@ -831,50 +717,14 @@ pushCommand("INC C");
     {
         Identifier iteratorindex2 = forStack.at(forStack.size()-5);
         Identifier iteratorindex = forStack.at(forStack.size()-2);
-
+//Identifier iterator3= forStack.at(forStack.size()-3);
+//pushCommand(iterator3.name);
         if(iteratorindex.type=="NUM"){
-
-            memToRegister2(iterator2.mem);
-
-            pushCommand("SUB H H");           
-            vector<string> opcodes;
-            long long int startsFrom = stoll(iteratorindex.name);
-            long long  int endsAt = 0;
-            long long   int current = startsFrom;
-            long long  int cost = 0;
-            while (current > endsAt)
-            {
-                if (current % 2 == 0 &&
-                    current * 2 >= endsAt)
-                {
-                    if (current - current / 2 < 5)
-                    {
-                        current--;
-                        cost++;
-                        opcodes.push_back("INC H");
-                    }
-                    else
-                    {
-                        current /= 2;
-                        cost += 5;
-                        opcodes.push_back("ADD H H");
-                    }
-                }
-                else
-                {
-                    current--;
-                    cost++;
-                    opcodes.push_back("INC H");
-                }
-            }
-            std::reverse(opcodes.begin(),opcodes.end());
-            for (long long int i=0; i<opcodes.size();i++)
-            {
-	            pushCommand(opcodes.at(i));
-            }
-
-            pushCommand("ADD C H");
-            pushCommand("COPY A C");
+    Identifier iteratorindex3 = forStack.at(forStack.size()-4);
+//pushCommand(iteratorindex3.name);
+            memToRegister2(iteratorindex3.mem);
+ Identifier iteratorindex4 = forStack.at(forStack.size()-5);
+         // pushCommand(iteratorindex4.name);
             pushCommand("LOAD C");
 pushCommand("INC C"); 
             memToRegister(iteratorindex2.mem);
@@ -890,18 +740,23 @@ pushCommand("INC C");
 
             string name = "C" + to_string(depth);
             removeIdentifier(name);
-
+removeIdentifier(iteratorindex3.name);
+removeIdentifier(iteratorindex4.name);
+//removeIdentifier(iterator.name);
             forStack.pop_back();
             forStack.pop_back();
         }
         else if(iteratorindex.type=="IDE")
         {
-            memToRegister(iterator2.mem);
+Identifier iteratorindex3 = forStack.at(forStack.size()-4);
 
-            memToRegister2(iteratorindex.mem);    
+            memToRegister2(iteratorindex3.mem);
+Identifier iteratorindex4 = forStack.at(forStack.size()-5);
+//pushCommand(iteratorindex4.name);
+        /*    memToRegister2(iteratorindex.mem);    
 
             pushCommand("ADD B C");
-            pushCommand("COPY A B");
+            pushCommand("COPY A B");*/
             pushCommand("LOAD C");
 pushCommand("INC C"); 
             memToRegister(iteratorindex2.mem);
@@ -917,6 +772,8 @@ pushCommand("INC C");
 
             string name = "C" + to_string(depth);
             removeIdentifier(name);
+removeIdentifier(iteratorindex3.name);
+removeIdentifier(iteratorindex4.name);
             forStack.pop_back();
             forStack.pop_back();
         }
@@ -3523,13 +3380,7 @@ for (long long int i=0; i<opcodes.size();i++)
 
 	pushCommand(opcodes.at(i));
 }
-            pushCommand("SUB C C");
-            for(int i=0; i < stoll(b.name); i++) {
-                pushCommand("INC C");
-            }
- if(isINC)
-pushCommand("INC B");
-            pushCommand("SUB B C");
+    
             
         }
     }
@@ -4255,6 +4106,52 @@ for (long long int i=0; i<opcodes.size();i++)
 	pushCommand(opcodes.at(i));
 }
 pushCommand("STORE B");
+}
+void registerToMem2(long long int mem) {
+pushCommand("SUB A A");
+vector<string> opcodes;
+long long int startsFrom = mem;
+           long long  int endsAt = 0;
+
+         long long   int current = startsFrom;
+          long long  int cost = 0;
+
+            
+
+            while (current > endsAt)
+            {
+                if (current % 2 == 0 &&
+                    current * 2 >= endsAt)
+                {
+                    if (current - current / 2 < 5)
+                    {
+                        current--;
+                        cost++;
+                        opcodes.push_back("INC A");
+                    }
+                    else
+                    {
+                        current /= 2;
+                        cost += 5;
+                        opcodes.push_back("ADD A A");
+                    }
+                }
+                else
+                {
+                    current--;
+                    cost++;
+                    opcodes.push_back("INC A");
+                }
+            }
+std::reverse(opcodes.begin(),opcodes.end());
+for (long long int i=0; i<opcodes.size();i++)
+{
+
+
+
+	pushCommand(opcodes.at(i));
+}
+pushCommand("STORE C");
 }
 
 void insertIdentifier(string key, Identifier i) {
