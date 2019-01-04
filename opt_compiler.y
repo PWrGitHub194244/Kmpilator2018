@@ -2157,7 +2157,7 @@ condition:
         }
         else {
             Identifier aI, bI;
-            if(identifierStack.count(argumentsTabIndex[0]) > 0)
+if(identifierStack.count(argumentsTabIndex[0]) > 0)
                 aI = identifierStack.at(argumentsTabIndex[0]);
             if(identifierStack.count(argumentsTabIndex[1]) > 0)
                 bI = identifierStack.at(argumentsTabIndex[1]);
@@ -2168,12 +2168,32 @@ condition:
 
 
             if(a.type != "ARR" && b.type != "ARR")
+                sub(b, a, 0, 1);
+            else
+                subTab(b, a, bI, aI, 0, 1);
+
+            pushCommandOneArg("JZERO B", codeStack.size()+2);
+            Jump jj;
+            createJump(&jj, codeStack.size(), depth);
+            jumpStack.push_back(jj);
+            pushCommand("JUMP");
+            if(identifierStack.count(argumentsTabIndex[0]) > 0)
+                aI = identifierStack.at(argumentsTabIndex[0]);
+            if(identifierStack.count(argumentsTabIndex[1]) > 0)
+                bI = identifierStack.at(argumentsTabIndex[1]);
+
+            if(a.type != "ARR" || b.type != "ARR")
+                subTab(a, b, aI, bI, 0, 0);
+
+
+
+            if(a.type != "ARR" && b.type != "ARR")
                 sub(a, b, 0, 1);
             else
                 subTab(a, b, aI, bI, 0, 1);
 
             pushCommandOneArg("JZERO B", codeStack.size()+2);
-            Jump jj;
+           
             createJump(&jj, codeStack.size(), depth);
             jumpStack.push_back(jj);
             pushCommand("JUMP");
