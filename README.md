@@ -1,7 +1,7 @@
 # Kompilator
 Kompilator prostego języka napisany na laboratoria z kursu Języki Formalne i Techniki Translacji
 
-Autor: **Piotr Bączkiewicz**
+Autor: **Piotr Bączkiewicz** 
 
 Nr indeksu: **194244**
 
